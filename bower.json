@@ -1,0 +1,28 @@
+{
+  "name": "examples",
+  "version": "0.0.0",
+  "homepage": "https://github.com/curran/examples",
+  "authors": [
+    "curran <curran.kelleher@gmail.com>"
+  ],
+  "description": "A collection of example programs, mostly data visualization.",
+  "keywords": [
+    "data",
+    "visualization",
+    "d3",
+    "html5"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "model-v0.0.4": "model#~0.0.4",
+    "udc-v0.0.1": "~0.0.1",
+    "udc-data-v0.0.1": "~0.0.1"
+  }
+}
