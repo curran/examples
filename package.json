@@ -1,0 +1,26 @@
+{
+  "name": "examples",
+  "version": "0.0.0",
+  "description": "A collection of example programs, mostly data visualization.",
+  "main": "example.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/curran/examples.git"
+  },
+  "keywords": [
+    "examples"
+  ],
+  "author": "curran <curran.kelleher@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/curran/examples/issues"
+  },
+  "homepage": "https://github.com/curran/examples",
+  "dependencies": {
+    "minimist": "0.0.8",
+    "mkdirp": "^0.4.1"
+  }
+}
