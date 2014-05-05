@@ -1,4 +1,1 @@
-examples
-========
-
-A collection of example programs, mostly data visualization.
+Everything is in the gh-pages branch.
