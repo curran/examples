@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/curran/examples",
   "dependencies": {
+    "express": "^4.1.1",
     "minimist": "0.0.8",
     "mkdirp": "^0.4.1"
   }
