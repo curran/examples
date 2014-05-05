@@ -1,0 +1,36 @@
+{
+  "name": "udc",
+  "version": "0.0.1",
+  "authors": [
+    "curran <curran.kelleher@gmail.com>"
+  ],
+  "description": "The Universal Data Cube",
+  "license": "MIT",
+  "homepage": "https://github.com/curran/udc",
+  "ignore": [
+    "LICENSE",
+    "README.md",
+    "bower.json",
+    "bower_components",
+    "countLines.sh",
+    "docs",
+    "gulpfile.js",
+    "node_modules",
+    "package.json",
+    "server.js",
+    "src",
+    "tests"
+  ],
+  "devDependencies": {
+    "lodash": "~2.4.1"
+  },
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "76612b852f3f319e654f12a497f052ea2b899409"
+  },
+  "_source": "git://github.com/curran/udc.git",
+  "_target": "~0.0.1",
+  "_originalSource": "udc"
+}
