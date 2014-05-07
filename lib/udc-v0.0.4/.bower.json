@@ -1,6 +1,6 @@
 {
   "name": "udc",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "authors": [
     "curran <curran.kelleher@gmail.com>"
   ],
@@ -26,13 +26,13 @@
   "devDependencies": {
     "lodash": "~2.4.1"
   },
-  "_release": "0.0.3",
+  "_release": "0.0.4",
   "_resolution": {
     "type": "version",
-    "tag": "v0.0.3",
-    "commit": "88bf38ad6f30b759b43a7db9bdf348da99b386cb"
+    "tag": "v0.0.4",
+    "commit": "5d0f3634c4150220efa6d78cd2574f04dfd21c2f"
   },
   "_source": "git://github.com/curran/udc.git",
-  "_target": "~0.0.3",
+  "_target": "~0.0.4",
   "_originalSource": "udc"
 }

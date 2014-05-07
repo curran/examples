@@ -6,7 +6,16 @@ require(['model', 'd3', 'udc', 'scatterPlot'], function (Model, d3, udc, Scatter
       concordancePath = wppPath + 'locations',
       gdpPath = wdiPath + 'GDP_current_USD',
       div = document.getElementById('container'),
-      scatterPlot = ScatterPlot(div);
+      scatterPlot = ScatterPlot(div),
+      xMeasure = 'Population',
+      yMeasure = 'GDP (current US$)';
+
+  scatterPlot.set({
+    getX: function (d) { return d.values[xMeasure]; },
+    getY: function (d) { return d.values[yMeasure]; },
+    xLabel: xMeasure,
+    yLabel: yMeasure
+  });
 
   loadTable(populationPath, function (populationTable) {
     var populationCube = udc.Cube(populationTable);
@@ -16,10 +25,14 @@ require(['model', 'd3', 'udc', 'scatterPlot'], function (Model, d3, udc, Scatter
 
       loadTable(concordancePath, function (concordanceTable) {
         var thesaurus = udc.Thesaurus([concordanceTable]),
-            cube = udc.mergeCubes(populationCube, gdpCube, thesaurus);
-//            cube2010 = cube.slice(udc.Cell([udc.Member('Time', 'Year', '2010')]));
+            cube = udc.mergeCubes(populationCube, gdpCube, thesaurus),
+            cube2010 = udc.slice(cube, udc.Member('Time', 'year', '2010')),
+            data = cube2010.observations.filter(function (observation) {
+              var d = observation.values;
+              return d[xMeasure] && d[yMeasure];
+            });
 
-        console.log(cube);
+        scatterPlot.set('data', data);
       });
     });
   });
@@ -31,6 +44,17 @@ require(['model', 'd3', 'udc', 'scatterPlot'], function (Model, d3, udc, Scatter
         table.rows = rows;
         callback(table);
       });
+    });
+  } 
+
+  setSizeFromDiv();
+
+  window.addEventListener('resize', setSizeFromDiv);
+
+  function setSizeFromDiv(){
+    scatterPlot.set('size', {
+      width: div.clientWidth,
+      height: div.clientHeight
     });
   }
 });

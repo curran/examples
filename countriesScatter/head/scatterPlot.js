@@ -1,23 +1,17 @@
-// An adaptation of the [D3 scatter plot example](http://bl.ocks.org/mbostock/3887118)
-// that uses `model.js`. This version, unlike the original example,
-// is model driven and reactive. When a part of the model updates,
-// only the parts of the visualization that depend on those parts
-// of the model are updated. There are no redundant calls to visualization
-// update code when multiple properties are changed simultaneously.
-//
-// Define the AMD module using the `define()` function
-// provided by Require.js.
+// An generalized version of the D3 scatter plot example:
+// http://bl.ocks.org/mbostock/3887118
+// By Curran Kelleher 5/6/2014
 define(['d3', 'model'], function (d3, Model) {
   return function (div){
-    var x = d3.scale.linear(),
-        y = d3.scale.linear(),
+    var x = d3.scale.log(),
+        y = d3.scale.log(),
         xAxis = d3.svg.axis().scale(x).orient('bottom'),
         yAxis = d3.svg.axis().scale(y).orient('left'),
         svg = d3.select(div).append('svg'),
         g = svg.append('g'),
         xAxisG = g.append('g').attr('class', 'x axis'),
         yAxisG = g.append('g').attr('class', 'y axis'),
-        xAxisLabel = yAxisG.append('text')
+        xAxisLabel = xAxisG.append('text')
           .attr('class', 'label')
           .attr('y', -6)
           .style('text-anchor', 'end'),
@@ -29,8 +23,7 @@ define(['d3', 'model'], function (d3, Model) {
           .style('text-anchor', 'end'),
         model = Model();
 
-    model.when('xLabel', xAxisLabel.text, yAxisLabel);
-    model.when('yLabel', yAxisLabel.text, yAxisLabel);
+    model.set('margin', { top: 20, right: 20, bottom: 30, left: 40 });
 
     model.when('margin', function (margin) {
       g.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -54,11 +47,14 @@ define(['d3', 'model'], function (d3, Model) {
       xAxisG.attr('transform', 'translate(0,' + height + ')');
     });
 
-    model.when(['width', 'height', 'data', 'xField', 'yField'], function (width, height, data, xField, yField) {
+    model.when('xLabel', xAxisLabel.text, xAxisLabel);
+    model.when('yLabel', yAxisLabel.text, yAxisLabel);
+
+    model.when(['width', 'height', 'data', 'getX', 'getY'], function (width, height, data, getX, getY) {
       var dots;
 
-      x.domain(d3.extent(data, function(d) { return d[xField]; })).nice();
-      y.domain(d3.extent(data, function(d) { return d[yField]; })).nice();
+      x.domain(d3.extent(data, function(d) { return getX(d); })).nice();
+      y.domain(d3.extent(data, function(d) { return getY(d); })).nice();
 
       x.range([0, width]);
       y.range([height, 0]);
@@ -71,8 +67,8 @@ define(['d3', 'model'], function (d3, Model) {
         .attr('class', 'dot')
         .attr('r', 3.5);
       dots
-        .attr('cx', function(d) { return x(d[xField]); })
-        .attr('cy', function(d) { return y(d[yField]); });
+        .attr('cx', function(d) { return x(getX(d)); })
+        .attr('cy', function(d) { return y(getY(d)); });
       dots.exit().remove();
     });
     return model;
