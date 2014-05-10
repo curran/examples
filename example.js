@@ -29,6 +29,7 @@ var argv = require('minimist')(process.argv.slice(2)),
     fs = require('fs'),
     ncp = require('ncp').ncp,
     generateImages = require('./example/generateImages.js'),
+    buildREADME = require('./example/buildREADME.js'),
     methods = {
       'create': function(exampleName){
         mkdirp(exampleName + '/head');
@@ -42,14 +43,23 @@ var argv = require('minimist')(process.argv.slice(2)),
         ncp(src, dest);
       },
       'build': function(){
+        var data = [
+          {
+            name: 'countriesScatter',
+            latest: 'v1'
+          }
+        ];
 
         // TODO use listing of examples from examples.json
-        var example = 'countriesScatter/v1';
-
-        generateImages(example, function () {
-          console.log('Done generating images');
-          // TODO compile README_template -> README using handlebars
+        // TODO for each example
+        data.forEach(function (entry) {
+          var example = entry.name + '/' + entry.latest;
+          generateImages(example, function () {
+            console.log('Done generating images.');
+          });
         });
+
+        buildREADME(data);
       },
     };
 

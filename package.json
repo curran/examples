@@ -23,6 +23,7 @@
   "dependencies": {
     "express": "^4.1.1",
     "gm": "^1.15.0",
+    "handlebars": "^2.0.0-alpha.2",
     "minimist": "0.0.8",
     "mkdirp": "^0.4.1",
     "ncp": "^0.5.1",
