@@ -1,7 +1,7 @@
 var fs = require('fs'),
     Handlebars = require('handlebars'),
     examplesTemplate = Handlebars.compile(
-      '<ul>{{#entries}}<li>{{name}}</li>{{/entries}}</ul>'
+      '{{#entries}}<a href="http://curran.github.io/examples/{{name}}/{{latest}}"><img src="images/{{name}}_{{latest}}_thumb.png"></a>{{/entries}}'
     );
 
 module.exports = function (entries) {
