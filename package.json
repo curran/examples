@@ -4,7 +4,8 @@
   "description": "A collection of example programs, mostly data visualization.",
   "main": "example.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -21,8 +22,11 @@
   "homepage": "https://github.com/curran/examples",
   "dependencies": {
     "express": "^4.1.1",
+    "gm": "^1.15.0",
     "minimist": "0.0.8",
     "mkdirp": "^0.4.1",
-    "ncp": "^0.5.1"
-  }
+    "ncp": "^0.5.1",
+    "phantomjs": "^1.9.7-5"
+  },
+  "devDependencies": {}
 }
