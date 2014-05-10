@@ -13,11 +13,11 @@ console.log(imagesDir + example.replace('/', '_') + '.png');
  
 renderExample(example, function () {
   console.log('done');
-  //gm(imagesDir + example.replace('/', '_') + '.png')
-  //  .resize(240, 240)
-  //  .write(imagesDir + example.replace('/', '_') + '_thumb.png', function (err) {
-  //    if (err) console.log(err);
-  //  });
+  gm(imagesDir + example.replace('/', '_') + '.png')
+    .resize(240, 240)
+    .write(imagesDir + example.replace('/', '_') + '_thumb.png', function (err) {
+      if (err) console.log(err);
+    });
 });
 
 function renderExample(example, callback){
