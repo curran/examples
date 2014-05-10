@@ -43,7 +43,7 @@ var argv = require('minimist')(process.argv.slice(2)),
         ncp(src, dest);
       },
       'build': function(){
-        var data = [
+        var entries = [
           {
             name: 'countriesScatter',
             latest: 'v1'
@@ -52,14 +52,14 @@ var argv = require('minimist')(process.argv.slice(2)),
 
         // TODO use listing of examples from examples.json
         // TODO for each example
-        data.forEach(function (entry) {
-          var example = entry.name + '/' + entry.latest;
-          generateImages(example, function () {
-            console.log('Done generating images.');
-          });
-        });
+        //entries.forEach(function (entry) {
+        //  var example = entry.name + '/' + entry.latest;
+        //  generateImages(example, function () {
+        //    console.log('Done generating images.');
+        //  });
+        //});
 
-        buildREADME(data);
+        buildREADME(entries);
       },
     };
 

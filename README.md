@@ -3,4 +3,4 @@ examples
 
 A collection of example programs, mostly data visualization.
 
-{{{examples}}}
+<ul><li>countriesScatter</li></ul>
