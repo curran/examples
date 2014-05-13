@@ -3,5 +3,11 @@
     "name": "countriesScatter",
     "title": "Countries Scatter Plot",
     "latest": "v1"
+  },
+  {
+    "name": "barChart",
+    "title": "An example bar chart",
+    "latest": "v1",
+    "date": "Tue May 13 2014 00:46:56 GMT-0400 (EDT)"
   }
 ]

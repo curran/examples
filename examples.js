@@ -37,7 +37,11 @@ function run(){
     if(err) throw err;
     var methods = {
       'create': function(exampleName){
+
+        // Make the head directory for the new example
         mkdirp(exampleName + '/head');
+
+        // Update examples.json with the new entry
         entries.push({
           name: exampleName,
           title: exampleName,
@@ -46,12 +50,29 @@ function run(){
         write(entries);
       },
       'release': function(exampleName){
+
+        // Compute the latest version number
         var version = fs.readdirSync(exampleName).filter(function (dir) {
               return dir[0] === 'v';
             }).length + 1,
             src = exampleName + '/head',
-            dest = exampleName + '/v' + version;
+            versionStr = 'v' + version,
+            dest = exampleName + '/' + versionStr,
+            entry;
+
+        // Copy the head files into the latest version directory
         ncp(src, dest);
+
+        // Update examples.json with the latest version.
+        entry = entries.filter(function (entry) {
+          return entry.name == exampleName;
+          console.log(exampleName);
+          console.log(entry.name);
+        });
+        if(entry.length > 0){
+          entry[0].latest = versionStr;
+        }
+        write(entries);
       },
       'build': function(){
         entries.forEach(function (entry) {

@@ -21,6 +21,7 @@
     "d3-v3.4.6": "d3#~3.4.6",
     "requirejs-v2.1.11": "requirejs#~2.1.11",
     "lodash-v2.4.1": "lodash#~2.4.1",
-    "q-v1.0.0": "q#~1.0.0"
+    "q-v1.0.0": "q#~1.0.0",
+    "d3ExampleData-v0.0.1": "d3ExampleData#~0.0.1"
   }
 }

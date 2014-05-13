@@ -1,0 +1,27 @@
+{
+  "name": "d3ExampleData",
+  "version": "0.0.1",
+  "homepage": "https://github.com/curran/d3ExampleData",
+  "authors": [
+    "curran <curran.kelleher@gmail.com>"
+  ],
+  "description": "Example data sets used in D3 examples.",
+  "keywords": [
+    "data"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "LICENSE",
+    "README.md",
+    "bower.json"
+  ],
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "c3045af702bc6312174b3deea71a1cea955803f0"
+  },
+  "_source": "git://github.com/curran/d3ExampleData.git",
+  "_target": "~0.0.1",
+  "_originalSource": "d3ExampleData"
+}
