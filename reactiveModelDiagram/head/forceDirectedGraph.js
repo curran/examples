@@ -1,6 +1,7 @@
 // A model driven force directed graph.
 // Draws from http://bl.ocks.org/mbostock/4062045
 // Curran Kelleher 4/30/2014
+// Updated 5/14/2014
 define(['d3', 'model'], function (d3, Model) {
   return function (div){
     var model = Model(),
@@ -8,6 +9,20 @@ define(['d3', 'model'], function (d3, Model) {
         svg = d3.select(div).append('svg').style('position', 'absolute'),
         linkG = svg.append('g'),
         nodeG = svg.append('g');
+    
+    // Arrowhead setup.
+    // Draws from Mobile Patent Suits example:
+    // http://bl.ocks.org/mbostock/1153292
+    svg.append('svg:defs').append('svg:marker')
+      .attr('id', 'arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 15)
+      .attr('refY', -1.5)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+    .append('svg:path')
+      .attr('d', 'M0,-5L10,0L0,5');
 
     model.set({
       color: d3.scale.category20(),
@@ -37,7 +52,9 @@ define(['d3', 'model'], function (d3, Model) {
         .start();
 
       link = linkG.selectAll('.link').data(graph.links);
-      link.enter().append('line').attr('class', 'link');
+      link.enter().append('line')
+        .attr('class', 'link')
+        .attr('marker-end', function(d) { return 'url(#arrow)' });
       link.style('stroke-width', function(d) { return Math.sqrt(d.value); });
       link.exit().remove();
 
