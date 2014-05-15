@@ -7,27 +7,49 @@ define(['d3', 'model'], function (d3, Model) {
     var model = Model(),
         force = d3.layout.force(),
         svg = d3.select(div).append('svg').style('position', 'absolute'),
+
+        // These 3 groups exist for control of Z-ordering.
+        // Links are on the bottom.
         linkG = svg.append('g'),
-        nodeG = svg.append('g');
+        // Nodes are on top of links.
+        nodeG = svg.append('g'),
+        // Arrowheads are on top of nodes.
+        arrowG = svg.append('g'),
+        nodeSize = 20,
+        arrowWidth = 8;
     
     // Arrowhead setup.
     // Draws from Mobile Patent Suits example:
     // http://bl.ocks.org/mbostock/1153292
-    svg.append('svg:defs').append('svg:marker')
+    svg.append('defs').append('marker')
       .attr('id', 'arrow')
-      .attr('viewBox', '0 -5 10 10')
-      .attr('refX', 15)
-      .attr('refY', -1.5)
-      .attr('markerWidth', 6)
-      .attr('markerHeight', 6)
       .attr('orient', 'auto')
-    .append('svg:path')
-      .attr('d', 'M0,-5L10,0L0,5');
+      .attr('preserveAspectRatio', 'none')
+    .append('path');
+
+    var t = 0;
+    setInterval(function(){
+      svg.select('defs marker')
+        // See also http://www.w3.org/TR/SVG/coords.html#ViewBoxAttribute
+        //.attr('viewBox', '0 -' + arrowWidth + ' 10 ' + (2 * arrowWidth))
+        .attr('viewBox', '0 -5 10 10')
+        // See also http://www.w3.org/TR/SVG/painting.html#MarkerElementRefXAttribute
+        // TODO generalize computation of refX
+        .attr('refX', 23)
+        .attr('refY', 0)
+        .attr('markerWidth', 10)
+        .attr('markerHeight', arrowWidth)
+      svg.select('defs marker path')
+        //.attr('d', 'M0,-' + arrowWidth + 'L10,0L0,' + arrowWidth );
+        .attr('d', 'M0,-5L10,0L0,5');
+    },20);
 
     model.set({
-      color: d3.scale.category20(),
+      color: d3.scale.ordinal()
+        .domain(['property', 'lambda'])
+        .range(['FFD1B5', 'white']),//d3.scale.category20(),
       charge: -120,
-      linkDistance: 30
+      linkDistance: 90
     });
 
     model.when(['charge', 'linkDistance'], function (charge, linkDistance) {
@@ -52,33 +74,82 @@ define(['d3', 'model'], function (d3, Model) {
         .start();
 
       link = linkG.selectAll('.link').data(graph.links);
-      link.enter().append('line')
-        .attr('class', 'link')
-        .attr('marker-end', function(d) { return 'url(#arrow)' });
-      link.style('stroke-width', function(d) { return Math.sqrt(d.value); });
+      link.enter().append('line').attr('class', 'link')
       link.exit().remove();
 
-      node = nodeG.selectAll('.node').data(graph.nodes);
-      node.enter().append('circle')
+      arrow = arrowG.selectAll('.arrow').data(graph.links);
+      arrow.enter().append('line')
+        .attr('class', 'arrow')
+        .attr('marker-end', function(d) { return 'url(#arrow)' });
+      arrow.exit().remove();
+
+      node = nodeG.selectAll('g').data(graph.nodes);
+
+      var nodeEnter = node.enter().append('g').call(force.drag);
+      nodeEnter.append('rect')
         .attr('class', 'node')
-        .attr('r', 5)
-        .append('title');
-      node
-        .style('fill', function(d) { return color(d.group); })
-        .call(force.drag);
+        .attr('y', -nodeSize)
+        .attr('height', nodeSize * 2)
+        .attr('rx', nodeSize)
+        .attr('ry', nodeSize);
+      nodeEnter.append('text')
+        .attr('class', 'nodeLabel');
+
+      node.select('g text')
+        .text(function(d) {
+          return (d.type === 'property' ? d.name : 'λ');
+        })
+        /* Center text vertically */
+        .attr('dy', function(d) {
+          if(d.type === 'lambda'){
+            return '0.35em';
+          } else {
+            return '0.3em';
+          }
+        })
+        .select(function (d) {
+          // Stash the svg text length in the data item
+          // for use in computing the rectangle width later.
+          d.textLength = this.getComputedTextLength();
+        });
+
+      node.select('g rect')
+        .style('fill', function(d) { return color(d.type); })
+        .attr('x', function(d) {
+          if(d.type === 'lambda'){
+            return -nodeSize;
+          } else {
+            return -(d.textLength + nodeSize) / 2;
+          }
+        })
+        .attr('width', function(d) {
+          if(d.type === 'lambda'){
+            return nodeSize * 2;
+          } else {
+            return d.textLength + nodeSize;
+          }
+        });
       node.exit().remove();
-      node.select('title').text(function(d) { return d.name; });
+//      node.select('title').text(function(d) { return d.name; });
 
       force.on('tick', function() {
-        link.attr('x1', function(d) { return d.source.x; })
-            .attr('y1', function(d) { return d.source.y; })
-            .attr('x2', function(d) { return d.target.x; })
-            .attr('y2', function(d) { return d.target.y; });
+        link.call(edge);
+        arrow.call(edge);
 
-        node.attr('cx', function(d) { return d.x; })
-            .attr('cy', function(d) { return d.y; });
+        node.attr('transform', function(d) {      
+          return 'translate(' + d.x + ',' + d.y + ')';
+        });
       });
     });
+
+    // Sets the (x1, y1, x2, y2) line properties for graph edges.
+    function edge(selection){
+      selection
+        .attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; });
+    }
 
     return model;
   };
