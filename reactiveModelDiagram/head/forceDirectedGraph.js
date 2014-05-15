@@ -21,15 +21,11 @@ define(['d3', 'model'], function (d3, Model) {
     // Arrowhead setup.
     // Draws from Mobile Patent Suits example:
     // http://bl.ocks.org/mbostock/1153292
-    svg.append('defs').append('marker')
-      .attr('id', 'arrow')
-      .attr('orient', 'auto')
-      .attr('preserveAspectRatio', 'none')
-    .append('path');
-
-    var t = 0;
-    setInterval(function(){
-      svg.select('defs marker')
+    svg.append('defs')
+      .append('marker')
+        .attr('id', 'arrow')
+        .attr('orient', 'auto')
+        .attr('preserveAspectRatio', 'none')
         // See also http://www.w3.org/TR/SVG/coords.html#ViewBoxAttribute
         //.attr('viewBox', '0 -' + arrowWidth + ' 10 ' + (2 * arrowWidth))
         .attr('viewBox', '0 -5 10 10')
@@ -39,10 +35,9 @@ define(['d3', 'model'], function (d3, Model) {
         .attr('refY', 0)
         .attr('markerWidth', 10)
         .attr('markerHeight', arrowWidth)
-      svg.select('defs marker path')
+      .append('path')
         //.attr('d', 'M0,-' + arrowWidth + 'L10,0L0,' + arrowWidth );
         .attr('d', 'M0,-5L10,0L0,5');
-    },20);
 
     model.set({
       color: d3.scale.ordinal()
@@ -144,6 +139,16 @@ define(['d3', 'model'], function (d3, Model) {
 
     // Sets the (x1, y1, x2, y2) line properties for graph edges.
     function edge(selection){
+
+      // TODO compute correct arrowhead position:
+      //   if(lambda)
+      //     use circle
+      //   else
+      //     use text length to compute box
+      //     if inside box
+      //       use box
+      //     else
+      //       use circle on the end of the box
       selection
         .attr('x1', function(d) { return d.source.x; })
         .attr('y1', function(d) { return d.source.y; })
