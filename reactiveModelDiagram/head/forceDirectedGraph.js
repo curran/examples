@@ -5,7 +5,10 @@
 define(['d3', 'model'], function (d3, Model) {
   return function (div){
     var model = Model(),
-        force = d3.layout.force(),
+        force = d3.layout.force()
+          .charge(-200)
+          .linkDistance(90)
+          .gravity(0.03),
         svg = d3.select(div).append('svg').style('position', 'absolute'),
 
         // These 3 groups exist for control of Z-ordering.
@@ -38,22 +41,14 @@ define(['d3', 'model'], function (d3, Model) {
       .append('path')
         //.attr('d', 'M0,-' + arrowWidth + 'L10,0L0,' + arrowWidth );
         .attr('d', 'M0,-5L10,0L0,5');
+    
 
     model.set({
       color: d3.scale.ordinal()
         .domain(['property', 'lambda'])
-        .range(['FFD1B5', 'white']),//d3.scale.category20(),
-      charge: -120,
-      linkDistance: 90
+        .range(['FFD1B5', 'white'])//d3.scale.category20(),
     });
 
-    model.when(['charge', 'linkDistance'], function (charge, linkDistance) {
-      force
-        .charge(charge)
-        .linkDistance(linkDistance)
-        .start();
-    });
-    
     model.when('box', function (box) {
       svg.attr('width', box.width).attr('height', box.height);
       svg.style('left', box.x + 'px').style('top', box.y + 'px')
@@ -127,7 +122,21 @@ define(['d3', 'model'], function (d3, Model) {
       node.exit().remove();
 //      node.select('title').text(function(d) { return d.name; });
 
-      force.on('tick', function() {
+      force.on('tick', function(e) {
+        // Execute left-right constraints
+        var k = 1 * e.alpha;
+        force.links().forEach(function (link) {
+          var a = link.source,
+              b = link.target,
+              dx = b.x - a.x,
+              dy = b.y - a.y,
+              d = Math.sqrt(dx * dx + dy * dy),
+              x = (a.x + b.x) / 2;
+          a.x += k * (x - d / 2 - a.x);
+          b.x += k * (x + d / 2 - b.x);
+        });
+
+
         link.call(edge);
         arrow.call(edge);
 
