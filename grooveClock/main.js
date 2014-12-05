@@ -69,32 +69,49 @@ require(["model", "d3", "_"], function (Model, d3, _) {
       levelThickness: 50
     });
     
+    // Compute the fraction of completion for each level in response
+    // to updates of model properties. The `audioTime` will update very
+    // frequently, so care was taken to implement this efficiently, avoiding object creation.
     model.when(["startTime", "audioTime", "levels", "smallestBeatLength"],
-        function (startTime, audioTime, levels, smallestBeatLength) {
-      // TODO update to new API
-      model.set("data", _.range(levels).map(function (i) {
-        var levelLength = smallestBeatLength * Math.pow(2, i),
-            time = (audioTime - startTime) % levelLength,
-            d = time / levelLength;
-        // This is the same `d` referred to in the D3 arc code.
-        return d;
-      }));
-    });
+      (function(){
 
+        // Re-use this array to avoid creating a new array every time
+        // audioTime updates.
+        var data = [];
+
+        return function (startTime, audioTime, levels, smallestBeatLength) {
+          var levelLength, time, i;
+
+          // If the number of levels has decreased,
+          if(data.length > levels) {
+            // make data have the correct number of entries.
+            data.splice(levels);
+          }
+
+          // Compute the fraction of completion for each level.
+          for(i = 0; i < levels; i++) {
+            levelLength = smallestBeatLength * Math.pow(2, i);
+            time = (audioTime - startTime) % levelLength;
+            data[i] = time / levelLength;
+          }
+
+          // Set the computed completion fractions on the model.
+          // TODO update to new API
+          model.set("data", data);
+        };
+      }())
+    );
+
+    // Update the arc computation function, svg dimensions,
+    // and g transform in response to resize or change in number of levels.
     model.when(["size", "levels"], function (size, levels) {
       var side = Math.min(size.width, size.height),
           levelThickness = side / levels / 2,
           arc = d3.svg.arc()
-            .innerRadius(function (d, i) {
-              return i * levelThickness;
-            })
-            .outerRadius(function (d, i) {
-              return (i + 1) * levelThickness;
-            })
+            .innerRadius(function (d, i) { return i * levelThickness; })
+            .outerRadius(function (d, i) { return (i + 1) * levelThickness; })
             .startAngle(0)
-            .endAngle(function (d) {
-              return d * Math.PI * 2;
-            });
+            .endAngle(function (d) { return d * Math.PI * 2; });
 
       model.set("arc", arc);
 
@@ -104,18 +121,14 @@ require(["model", "d3", "_"], function (Model, d3, _) {
          .attr("height", size.height);
     });
 
+    // Visualize the data array as concentric rings.
     model.when(["arc", "data"], function (arc, data) {
+
       var paths = g.selectAll("path").data(data);
-
       paths.enter().append("path");
-
       paths.attr("d", arc);
-
       paths.exit().remove();
 
-      console.log(data);
-      console.log(arc);
-      //console.log(model.data);
     });
 
     return model;
