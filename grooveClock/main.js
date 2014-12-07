@@ -2,17 +2,22 @@ require(["model", "d3", "_"], function (Model, d3, _) {
   var div = document.getElementById("container"),
       clock = GrooveClock(div);
 
-  clock.set("startTime", Date.now());
+  // Initialize the start time of the groove clock.
+  clock.startTime = Date.now();
 
-  setInterval(function (){
-    clock.set("audioTime", Date.now());
-  }, 20);
+  // Update the time of the clock periodically.
+  function startClock(){
+    clock.audioTime = Date.now();
+    requestAnimationFrame(startClock);
+  }
+  startClock();
 
+  // Update the size of the groove clock on resize.
   function setSizeFromDiv(){
-    clock.set("size", {
+    clock.size = {
       width: div.clientWidth,
       height: div.clientHeight
-    });
+    };
   }
 
   // Set size once to initialize
@@ -21,6 +26,8 @@ require(["model", "d3", "_"], function (Model, d3, _) {
   // Set size on resize
   window.addEventListener("resize", setSizeFromDiv);
  
+  // A GrooveClock encapsulates a multi-level beat clock
+  // visualized as concentric arcs using D3.
   function GrooveClock(div){
     var model = Model(),
         svg = d3.select(div).append("svg")
@@ -29,7 +36,7 @@ require(["model", "d3", "_"], function (Model, d3, _) {
     model.set({
 
       // The current time from the Web Audio API.
-      audioTime: 50,
+      audioTime: 0,
 
       // The number of levels (an integer).
       //
@@ -37,7 +44,7 @@ require(["model", "d3", "_"], function (Model, d3, _) {
       //
       // The first level represents the finest detail of rhythm,
       // let's say 16th notes (from the vocabulary of music).
-      levels: 10,
+      levels: 8,
 
       // The data structure that represents the current
       // state of the groove clock.
@@ -96,8 +103,7 @@ require(["model", "d3", "_"], function (Model, d3, _) {
           }
 
           // Set the computed completion fractions on the model.
-          // TODO update to new API
-          model.set("data", data);
+          model.data = data;
         };
       }())
     );
@@ -106,14 +112,13 @@ require(["model", "d3", "_"], function (Model, d3, _) {
     // and g transform in response to resize or change in number of levels.
     model.when(["size", "levels"], function (size, levels) {
       var side = Math.min(size.width, size.height),
-          levelThickness = side / levels / 2,
-          arc = d3.svg.arc()
-            .innerRadius(function (d, i) { return i * levelThickness; })
-            .outerRadius(function (d, i) { return (i + 1) * levelThickness; })
-            .startAngle(0)
-            .endAngle(function (d) { return d * Math.PI * 2; });
-
-      model.set("arc", arc);
+          levelThickness = side / levels / 2;
+      
+      model.arc = d3.svg.arc()
+        .innerRadius(function (d, i) { return i * levelThickness; })
+        .outerRadius(function (d, i) { return (i + 1) * levelThickness; })
+        .startAngle(0)
+        .endAngle(function (d) { return d * Math.PI * 2; });
 
       g.attr("transform", "translate(" + (side / 2) + "," + (side / 2) + ")");
 
@@ -126,7 +131,9 @@ require(["model", "d3", "_"], function (Model, d3, _) {
 
       var paths = g.selectAll("path").data(data);
       paths.enter().append("path");
-      paths.attr("d", arc);
+      paths
+        .attr("d", arc)
+        .attr("fill", "white");
       paths.exit().remove();
 
     });
