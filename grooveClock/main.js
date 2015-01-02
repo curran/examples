@@ -18,7 +18,10 @@ require(["model", "d3", "_"], function (Model, d3, _) {
       // in seconds, relative to startTime.
       nextNoteTime = 0,
 
-      startTime = 2;
+      // A slight delay to synchronize audio and video perceptually.
+      offset = 0.04,
+
+      startTime = secondsPerBeat * 4.5;
 
   clock.smallestBeatLength = secondsPerBeat;
   clock.startTime = startTime;
@@ -26,15 +29,16 @@ require(["model", "d3", "_"], function (Model, d3, _) {
   // Fetch the shaker sample.
   // Draws from http://www.html5rocks.com/en/tutorials/webaudio/intro/
   function loadSample() {
-    var request = new XMLHttpRequest();
-    request.open('GET', 'ShakerSample.wav', true);
+    var request = new XMLHttpRequest(),
+        softShaker = 'Shakers/Shakers_StayOnBeat (15).wav',
+        shortTick = 'Shakers/Shakers_StayOnBeat (29).wav';
+    request.open('GET', shortTick, true);
     request.responseType = 'arraybuffer';
     request.onload = function() {
       context.decodeAudioData(request.response, function(buffer) {
         setInterval(function () {
           while (startTime + nextNoteTime < context.currentTime + scheduleAheadTime ) {
-            console.log("here");
-            playSound(buffer, startTime + nextNoteTime);
+            playSound(buffer, startTime + nextNoteTime + offset);
             nextNoteTime += secondsPerBeat;
           }
         }, pollTime);
