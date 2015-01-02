@@ -1,13 +1,59 @@
 require(["model", "d3", "_"], function (Model, d3, _) {
   var div = document.getElementById("container"),
-      clock = GrooveClock(div);
+      clock = GrooveClock(div),
+      context = new AudioContext(),
 
-  // Initialize the start time of the groove clock.
-  clock.startTime = Date.now();
+      // The milliseconds between breaks in note scheduling.
+      pollTime = 60,
+
+      // The seconds ahead of the current time at which 
+      // notes are scheduled.
+      scheduleAheadTime = 1,
+
+      // The tempo in Beats per Minute (BPM)
+      tempo = 110,
+      secondsPerBeat = 60 / tempo,
+
+      // The time at which the next note should be scheduled,
+      // in seconds, relative to startTime.
+      nextNoteTime = 0,
+
+      startTime = 2;
+
+  clock.smallestBeatLength = secondsPerBeat;
+  clock.startTime = startTime;
+
+  // Fetch the shaker sample.
+  // Draws from http://www.html5rocks.com/en/tutorials/webaudio/intro/
+  function loadSample() {
+    var request = new XMLHttpRequest();
+    request.open('GET', 'ShakerSample.wav', true);
+    request.responseType = 'arraybuffer';
+    request.onload = function() {
+      context.decodeAudioData(request.response, function(buffer) {
+        setInterval(function () {
+          while (startTime + nextNoteTime < context.currentTime + scheduleAheadTime ) {
+            console.log("here");
+            playSound(buffer, startTime + nextNoteTime);
+            nextNoteTime += secondsPerBeat;
+          }
+        }, pollTime);
+      });
+    };
+    request.send();
+    function playSound(buffer, time) {
+      var source = context.createBufferSource();
+      source.buffer = buffer;
+      source.connect(context.destination);
+      source.start(time);
+    }
+  }
+
+  loadSample();
 
   // Update the time of the clock periodically.
   function startClock(){
-    clock.audioTime = Date.now();
+    clock.audioTime = context.currentTime;
     requestAnimationFrame(startClock);
   }
   startClock();
@@ -34,6 +80,7 @@ require(["model", "d3", "_"], function (Model, d3, _) {
         g = svg.append("g");
 
     model.set({
+      startTime: 0,
 
       // The current time from the Web Audio API.
       audioTime: 0,
@@ -68,9 +115,9 @@ require(["model", "d3", "_"], function (Model, d3, _) {
       //  * Level 4 - smallestBeatLength * 16
       data: [],
 
-      // The length in milliseconds of the finest grained unit of
+      // The length in seconds of the finest grained unit of
       // rhythm, represented by level 0.
-      smallestBeatLength: 500,
+      smallestBeatLength: 1,
 
       // The thickness of each concentric ring representing levels (in pixels).
       levelThickness: 50
