@@ -40,7 +40,26 @@ require(['model', 'd3', 'udc', 'scatterPlot', 'q'], function (Model, d3, udc, Sc
           return d[xMeasure] && d[yMeasure];
         });
     scatterPlot.set('data', data);
+
+    console.log(toCSV(data.map(function(d){
+      return {
+        country_code: d.cell.members[0].code,
+        population: d.values[xMeasure],
+        gdp: d.values[yMeasure]
+      };
+    })));
+
   });
+
+
+  function toCSV(data){
+    var columns = Object.keys(data[0]);
+    return [columns.join(",")].concat(data.map(function(d){
+      return columns.map(function(column){
+        return d[column];
+      }).join(",");
+    })).join("\n");
+  }
 
   function loadTable(path, callback){
     return Q.all([
