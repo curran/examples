@@ -11,7 +11,9 @@ require(["model", "d3", "_"], function (Model, d3, _) {
       scheduleAheadTime = 1,
 
       // The tempo in Beats per Minute (BPM)
-      tempo = 110,
+      defaultTempo = 110,
+      hash = window.location.hash,
+      tempo = hash ? hash.substr(1) : defaultTempo,
       secondsPerBeat = 60 / tempo,
 
       // The time at which the next note should be scheduled,
